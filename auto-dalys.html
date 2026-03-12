@@ -33,21 +33,95 @@
     color: var(--text);
     font-family: var(--font-body);
     min-height: 100vh;
+    margin: 0;
+    padding: 24px;
     overflow-x: hidden;
+  }
+
+  .dashboard {
+    width: min(1200px, 100%);
+    margin: 0 auto 60px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  .top-block {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .top-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(240,165,0,0.18), transparent 55%),
+      radial-gradient(circle at 80% 0%, rgba(0,200,150,0.15), transparent 45%);
+    pointer-events: none;
+  }
+
+  .top-block > * { position: relative; z-index: 1; }
+
+  .grid-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    min-height: 320px;
+  }
+
+  .scan-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .inventory-block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .focus-flash {
+    animation: focusFlash 1s ease;
+  }
+
+  @keyframes focusFlash {
+    0% { box-shadow: 0 0 0 0 rgba(240,165,0,0); }
+    40% { box-shadow: 0 0 0 5px rgba(240,165,0,0.25); }
+    100% { box-shadow: 0 0 0 0 rgba(240,165,0,0); }
+  }
+
+  @media (max-width: 1100px) {
+    .dashboard { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 16px; }
   }
 
   /* HEADER */
   .header {
-    background: var(--surface);
-    border-bottom: 2px solid var(--accent);
-    padding: 12px 16px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
   }
 
   .logo {
@@ -76,46 +150,6 @@
     color: var(--accent);
   }
 
-  /* NAV TABS */
-  .nav {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 57px;
-    z-index: 99;
-  }
-
-  .nav-btn {
-    background: none;
-    border: none;
-    color: var(--text2);
-    padding: 10px 4px;
-    font-family: var(--font-body);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    transition: all 0.2s;
-    border-bottom: 2px solid transparent;
-  }
-
-  .nav-btn.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-    background: rgba(240,165,0,0.05);
-  }
-
-  .nav-icon { font-size: 18px; }
-
-  /* PAGES */
-  .page { display: none; padding: 16px; padding-bottom: 20px; }
-  .page.active { display: block; }
 
   /* SCAN PAGE */
   .scan-container {
@@ -196,6 +230,8 @@
     background: var(--surface);
   }
 
+  #scanResult { margin-bottom: 12px; }
+
   .btn {
     border: none;
     border-radius: 8px;
@@ -269,7 +305,7 @@
 
   /* FORM */
   .form-section {
-    background: var(--surface);
+    background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 16px;
@@ -725,6 +761,10 @@
 </head>
 <body>
 
+<div class="dashboard">
+
+<section class="top-block" id="block-scan">
+
 <!-- HEADER -->
 <div class="header">
   <div class="logo">Auto<span>Dalys</span></div>
@@ -734,24 +774,8 @@
   </div>
 </div>
 
-<!-- NAV -->
-<nav class="nav">
-  <button class="nav-btn active" onclick="showPage('scan')" id="nav-scan">
-    <span class="nav-icon">📷</span>Skenavimas
-  </button>
-  <button class="nav-btn" onclick="showPage('add')" id="nav-add">
-    <span class="nav-icon">➕</span>Pridėti
-  </button>
-  <button class="nav-btn" onclick="showPage('inventory')" id="nav-inventory">
-    <span class="nav-icon">📦</span>Sandėlis
-  </button>
-  <button class="nav-btn" onclick="showPage('stats')" id="nav-stats">
-    <span class="nav-icon">📊</span>Statistika
-  </button>
-</nav>
-
 <!-- PAGE: SCAN -->
-<div class="page active" id="page-scan">
+<div class="scan-stack" id="page-scan">
   <div class="scan-container">
     <div class="scan-header">
       <span>📷</span>
@@ -787,8 +811,10 @@
   </div>
 </div>
 
+</section>
+
 <!-- PAGE: ADD -->
-<div class="page" id="page-add">
+<section class="grid-block" id="block-add">
   <div class="section-title">🔧 Nauja Dalis</div>
   <div class="form-section">
     <div class="form-row">
@@ -859,10 +885,11 @@
     </div>
   </div>
   <button class="btn btn-green btn-full" style="width:100%;padding:14px;" onclick="savePart()">✔ Išsaugoti Dalį</button>
-</div>
+</section>
 
 <!-- PAGE: INVENTORY -->
-<div class="page" id="page-inventory">
+<section class="grid-block inventory-block" id="block-inventory">
+  <div class="section-title">📦 Sandėlis</div>
   <div class="search-bar">
     <input type="text" id="searchInput" placeholder="🔍  Ieškoti dalių..." oninput="renderInventory()" />
   </div>
@@ -876,10 +903,11 @@
     <div class="chip" onclick="setFilter('Trūksta')">⚠ Trūksta</div>
   </div>
   <div class="parts-list" id="partsList"></div>
-</div>
+</section>
 
 <!-- PAGE: STATS -->
-<div class="page" id="page-stats">
+<section class="grid-block" id="block-stats">
+  <div class="section-title">📊 Statistika</div>
   <div class="stats-grid">
     <div class="stat-card c1">
       <div class="stat-icon-lg">📦</div>
@@ -908,6 +936,8 @@
 
   <div class="section-title">Istorija <span class="badge" id="histCount">0</span></div>
   <div id="historyList"></div>
+</section>
+
 </div>
 
 <!-- MODAL: Part Detail -->
@@ -960,6 +990,7 @@ function save() {
   localStorage.setItem('autoParts', JSON.stringify(parts));
   localStorage.setItem('autoHistory', JSON.stringify(history));
   updateHeader();
+  renderStats();
 }
 
 function updateHeader() {
@@ -968,15 +999,12 @@ function updateHeader() {
   document.getElementById('lowBadge').textContent = '⚠ ' + low;
 }
 
-// ===================== PAGES =====================
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  document.getElementById('nav-' + id).classList.add('active');
-  if (id === 'inventory') renderInventory();
-  if (id === 'stats') renderStats();
-  if (id !== 'scan' && scanning) stopScan();
+function focusBlock(blockId) {
+  const el = document.getElementById(blockId);
+  if (!el) return;
+  el.classList.add('focus-flash');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => el.classList.remove('focus-flash'), 1000);
 }
 
 // ===================== SCAN =====================
@@ -1054,7 +1082,7 @@ function lookupByCode(code) {
 
 function addNewFromCode(code) {
   document.getElementById('f-code').value = code;
-  showPage('add');
+  focusBlock('block-add');
   showToast('Įveskite dalies informaciją');
 }
 
@@ -1082,11 +1110,12 @@ function savePart() {
   parts.push(part);
   addHistory('in', part, qty);
   save();
+  renderInventory();
 
   // Clear form
   ['f-name','f-code','f-oem','f-qty','f-minqty','f-buy','f-sell','f-cars','f-notes'].forEach(id => document.getElementById(id).value = '');
   showToast('✅ Dalis išsaugota!');
-  showPage('inventory');
+  focusBlock('block-inventory');
 }
 
 // ===================== INVENTORY =====================
@@ -1257,6 +1286,7 @@ function showToast(msg) {
 // Init
 updateHeader();
 renderInventory();
+renderStats();
 </script>
 </body>
 </html>

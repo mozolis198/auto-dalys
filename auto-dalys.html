@@ -863,6 +863,7 @@
         <input type="text" id="f-oem" placeholder="pvz. 1K0129620" onchange="autoFillCars()" />
       </div>
     </div>
+    <button class="btn btn-blue" style="width:100%;margin-bottom:8px;" onclick="searchPartName()">🔍 Ieškoti pavadinimo internete</button>
     <div class="input-row">
       <div class="form-row">
         <label>Kategorija</label>
@@ -1102,6 +1103,28 @@ function autoFillCars() {
       showToast('🔍 Automobiliai nustatyti pagal kodą!');
     }
   }
+}
+
+function searchPartName() {
+  const code = document.getElementById('f-code').value.trim();
+  const oem = document.getElementById('f-oem').value.trim();
+  const search = code || oem;
+  
+  if (!search) { 
+    showToast('Įveskite kodą arba OEM!'); 
+    return; 
+  }
+  
+  const sites = [
+    { name: 'Google', url: `https://www.google.com/search?q=${encodeURIComponent(search + ' auto dalys')}` },
+    { name: 'TEP24', url: `https://www.tep24.lt/?search=${encodeURIComponent(search)}` },
+    { name: 'Autoaibe', url: `https://www.autoaibe.lt/search?text=${encodeURIComponent(search)}` },
+    { name: 'Autodoc', url: `https://www.autodoc.co.uk/search?query=${encodeURIComponent(search)}` },
+    { name: 'Emex', url: `https://www.emex.ru/result?query=${encodeURIComponent(search)}` }
+  ];
+  
+  sites.forEach(url => window.open(url.url, '_blank'));
+  showToast(`Atidaryta ${sites.length} svetainių su '${search}'`);
 }
 
 function save() {

@@ -1061,9 +1061,10 @@ function lookupByCode(code) {
           <div><div class="result-label">Kodas</div><div class="result-value" style="font-family:var(--font-mono)">${part.code}</div></div>
           <div><div class="result-label">Kategorija</div><div class="result-value">${part.cat}</div></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">
           <button class="btn btn-accent" onclick="openModal(${part.id})">🔧 Valdyti</button>
           <button class="btn btn-outline" onclick="prefillAdd('${part.id}')">📋 Redaguoti</button>
+          <button class="btn btn-blue" onclick="searchOnline('${part.code || part.oem}')">🌐 Kaina</button>
         </div>
       </div>`;
     showToast('✅ Dalis rasta!');
@@ -1074,9 +1075,36 @@ function lookupByCode(code) {
         <div class="result-label">Skenavimo rezultatas</div>
         <div class="barcode-display">${code}</div>
         <div style="color:var(--text2);font-size:13px;margin:8px 0;">Dalis nerasta sandėlyje</div>
-        <button class="btn btn-green" style="width:100%" onclick="addNewFromCode('${code}')">➕ Pridėti kaip naują dalį</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button class="btn btn-green" onclick="addNewFromCode('${code}')">➕ Pridėti</button>
+          <button class="btn btn-blue" onclick="searchOnline('${code}')">🔍 Internete</button>
+        </div>
       </div>`;
     showToast('ℹ️ Dalis nerasta');
+  }
+}
+
+function searchOnline(code) {
+  const sites = [
+    { name: 'Google', url: `https://www.google.com/search?q=${encodeURIComponent(code)}` },
+    { name: 'TEP24', url: `https://www.tep24.lt/?search=${encodeURIComponent(code)}` },
+    { name: 'Autodoc', url: `https://www.autodoc.co.uk/search?query=${encodeURIComponent(code)}` },
+    { name: 'Emex', url: `https://www.emex.ru/result?query=${encodeURIComponent(code)}` }
+  ];
+  
+  let msg = 'Pasirinkite svetainę:';
+  sites.forEach((site, i) => {
+    msg += `\n${i+1}. ${site.name}`;
+  });
+  
+  const choice = prompt(msg + '\n\nĮveskite numerį (1-4):');
+  const idx = parseInt(choice) - 1;
+  
+  if (idx >= 0 && idx < sites.length) {
+    window.open(sites[idx].url, '_blank');
+    showToast(`Atidaryta ${sites[idx].name}`);
+  } else {
+    window.open(sites[0].url, '_blank');
   }
 }
 

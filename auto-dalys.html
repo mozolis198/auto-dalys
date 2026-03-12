@@ -856,11 +856,11 @@
     <div class="input-row">
       <div class="form-row">
         <label>Kodas / Barkodas</label>
-        <input type="text" id="f-code" placeholder="pvz. AF-12345" />
+        <input type="text" id="f-code" placeholder="pvz. AF-12345" onchange="autoFillCars()" />
       </div>
       <div class="form-row">
         <label>OEM Kodas</label>
-        <input type="text" id="f-oem" placeholder="pvz. 1K0129620" />
+        <input type="text" id="f-oem" placeholder="pvz. 1K0129620" onchange="autoFillCars()" />
       </div>
     </div>
     <div class="input-row">
@@ -1022,6 +1022,86 @@ if (parts.length === 0) {
     { id: Date.now()+6, name: 'Žvakė NGK', code: 'ZV-NGK', oem: 'NGK BKUR6ET10', cat: 'Variklis', unit: 'vnt', qty: 1, minQty: 4, buyPrice: 5.80, sellPrice: 9.50, cars: 'VW 1.6 FSI', notes: '' },
   ];
   save();
+}
+
+// Auto-pildymo žemėlapis pagal OEM kodą
+const carMapping = {
+  // Oro filtrai
+  '1K0129620': 'VW Golf 5/6, VW Passat, VW Caddy, Seat Leon, Audi A3',
+  '1J0129620': 'VW Golf 4, VW Bora, VW Beetle',
+  'L1K0129620': 'VW Golf 5, Jetta, Touran',
+  '4M0129620': 'VW Amarok, Audi Q5',
+  '5Q0129620': 'VW Golf 7, Audi A3 8V, Seat Leon 5F',
+  
+  // Tepalo filtrai
+  '030115561H': 'VW 1.9 TDI, VW 2.0 TDI, Audi A4 B6/B7',
+  '03D115561': 'VW 1.9/2.0 TDI PD',
+  '1K0177177': 'VW 1.4/1.6 FSI, Audi A3 8P',
+  
+  // Stabdžių diskai priekiniai
+  '1J0615301C': 'VW Golf 4, VW Bora, Seat Leon 1M, Audi A3 8L',
+  '5Q0615301': 'VW Golf 7, VW Passat B8, Audi A3 8V, Seat Leon 5F',
+  '8N0615301A': 'Audi TT 8N',
+  '6Q0615301': 'VW Polo 9N, Seat Ibiza 6L',
+  
+  // Stabdžių trinkelės
+  'WVA23145': 'Universal',
+  'GDB1551': 'VW Golf 4, Audi A3 8L',
+  'GDB1566': 'VW Golf 5/6, Audi A3 8P',
+  
+  // Žvakės
+  'NGK BKUR6ET10': 'VW 1.6 FSI, Audi A3 1.6',
+  'NGK Iridium IX': 'Universal',
+  'BOSCH FR7II30': 'VW 1.9 TDI',
+  
+  // Kiti dažni
+  '7L5000654B': 'VW Touareg, Porsche Cayenne',
+  '1K0820800': 'VW Golf 5/6, VW Touran, Seat Alhambra',
+  '3C0820207': 'VW Passat B6/B7, Audi A4 B8',
+  
+  // Opel Antara
+  '96535078': 'Opel Antara',
+  '96613463': 'Opel Antara 2.0 CDTI',
+  '96828135': 'Opel Antara',
+  
+  // Nissan Qashqai
+  '15200-4AA0A': 'Nissan Qashqai, X-Trail',
+  '15208-JG30A': 'Nissan Qashqai 1.5/2.0 dCi',
+  '27277-4AA0A': 'Nissan Qashqai',
+  
+  // BMW 530
+  '11427557025': 'BMW 520i, 525i, 530i E60/E61',
+  '11427512305': 'BMW E60, E61, E90',
+  '34316761219': 'BMW E60, E90',
+  
+  // Hyundai Kona
+  '28113-2M000': 'Hyundai Kona, Tucson',
+  '28113-2E000': 'Hyundai Kona 1.6/2.0',
+  '31112-2S000': 'Hyundai Kona Electric'
+};
+
+function getCarsByCode(code, oem) {
+  const searchCode = (code || '').toUpperCase() + '|' + (oem || '').toUpperCase();
+  for (const [key, cars] of Object.entries(carMapping)) {
+    if (searchCode.includes(key.toUpperCase())) {
+      return cars;
+    }
+  }
+  return '';
+}
+
+function autoFillCars() {
+  const code = document.getElementById('f-code').value.trim();
+  const oem = document.getElementById('f-oem').value.trim();
+  const carsField = document.getElementById('f-cars');
+  
+  if (!carsField.value) {
+    const cars = getCarsByCode(code, oem);
+    if (cars) {
+      carsField.value = cars;
+      showToast('🔍 Automobiliai nustatyti pagal kodą!');
+    }
+  }
 }
 
 function save() {

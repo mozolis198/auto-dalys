@@ -941,6 +941,15 @@
     <div class="chip" onclick="setFilter('Elektra')">Elektra</div>
     <div class="chip" onclick="setFilter('Trūksta')">⚠ Trūksta</div>
   </div>
+  <div class="filter-chips" id="carFilterChips">
+    <div class="chip active" onclick="setCarFilter('')">🚗 Visi automobiliai</div>
+    <div class="chip" onclick="setCarFilter('Opel Antara')">Opel Antara</div>
+    <div class="chip" onclick="setCarFilter('Nissan Qashqai')">Nissan Qashqai</div>
+    <div class="chip" onclick="setCarFilter('X-Trail')">X-Trail</div>
+    <div class="chip" onclick="setCarFilter('BMW')">BMW</div>
+    <div class="chip" onclick="setCarFilter('Hyundai Kona')">Hyundai Kona</div>
+    <div class="chip" onclick="setCarFilter('Tucson')">Tucson</div>
+  </div>
   <div class="parts-list" id="partsList"></div>
 </section>
 
@@ -1314,10 +1323,21 @@ function savePart() {
 }
 
 // ===================== INVENTORY =====================
+let currentCarFilter = '';
+
 function setFilter(f) {
   currentFilter = f;
-  document.querySelectorAll('.chip').forEach(c => {
+  document.querySelectorAll('#filterChips .chip').forEach(c => {
     c.classList.toggle('active', c.textContent.includes(f) || (f==='Visos' && c.textContent==='Visos'));
+  });
+  renderInventory();
+}
+
+function setCarFilter(car) {
+  currentCarFilter = car;
+  document.querySelectorAll('#carFilterChips .chip').forEach(c => {
+    const chipCar = c.textContent.replace('🚗 ', '');
+    c.classList.toggle('active', (car === '' && chipCar === 'Visi automobiliai') || chipCar === car);
   });
   renderInventory();
 }
@@ -1329,7 +1349,8 @@ function renderInventory() {
   let list = parts.filter(p => {
     const matchQ = !q || p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || p.oem.toLowerCase().includes(q);
     const matchF = currentFilter === 'Visos' || p.cat === currentFilter || (currentFilter === 'Trūksta' && p.qty <= p.minQty);
-    return matchQ && matchF;
+    const matchCar = !currentCarFilter || (p.cars && p.cars.toLowerCase().includes(currentCarFilter.toLowerCase()));
+    return matchQ && matchF && matchCar;
   });
 
   const el = document.getElementById('partsList');

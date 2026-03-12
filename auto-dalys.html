@@ -404,6 +404,24 @@
     border-color: var(--accent);
   }
 
+  .car-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .car-chips .chip {
+    font-size: 10px;
+    padding: 4px 10px;
+    text-transform: none;
+  }
+
+  .car-chips .chip:hover {
+    background: var(--accent);
+    color: #0d0f12;
+  }
+
   .parts-list { display: flex; flex-direction: column; gap: 8px; }
 
   .part-card {
@@ -878,6 +896,12 @@
     <div class="form-row">
       <label>Tinkama automobiliams</label>
       <input type="text" id="f-cars" placeholder="pvz. VW Golf 4, Audi A3 1.9 TDI" />
+      <div class="car-chips">
+        <div class="chip" onclick="addCar('Opel Antara')">Opel Antara</div>
+        <div class="chip" onclick="addCar('Nissan Qashqai')">Nissan Qashqai</div>
+        <div class="chip" onclick="addCar('BMW 530')">BMW 530</div>
+        <div class="chip" onclick="addCar('Hyundai Kona')">Hyundai Kona</div>
+      </div>
     </div>
     <div class="form-row">
       <label>Pastabos</label>
@@ -1112,6 +1136,16 @@ function addNewFromCode(code) {
   document.getElementById('f-code').value = code;
   focusBlock('block-add');
   showToast('Įveskite dalies informaciją');
+}
+
+function addCar(car) {
+  const input = document.getElementById('f-cars');
+  if (input.value) {
+    input.value += ', ' + car;
+  } else {
+    input.value = car;
+  }
+  input.focus();
 }
 
 // ===================== ADD PART =====================

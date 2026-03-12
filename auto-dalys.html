@@ -827,6 +827,20 @@
       </div>
     </div>
   </div>
+
+  <div class="section-title">🌐 Ieškoti internete</div>
+  <div class="form-section">
+    <div class="form-row">
+      <label>Surasti dalis interneto parduotuvėse</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="onlineSearchCode" placeholder="Įveskite kodą arba dalies pavadinimą..." />
+        <button class="btn btn-blue" style="white-space:nowrap;padding:10px 14px;" onclick="doOnlineSearch()">🌐 Ieškoti</button>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text2);margin-top:6px;">
+      Ieškos: Google, TEP24, Autodoc, Emex, Autoaibe
+    </div>
+  </div>
 </div>
 
 </section>
@@ -1106,6 +1120,22 @@ function lookupByCode(code) {
       </div>`;
     showToast('ℹ️ Dalis nerasta');
   }
+}
+
+function doOnlineSearch() {
+  const code = document.getElementById('onlineSearchCode').value.trim();
+  if (!code) { showToast('Įveskite kodą!'); return; }
+  
+  const sites = [
+    `https://www.google.com/search?q=${encodeURIComponent(code)}`,
+    `https://www.tep24.lt/?search=${encodeURIComponent(code)}`,
+    `https://www.autodoc.co.uk/search?query=${encodeURIComponent(code)}`,
+    `https://www.emex.ru/result?query=${encodeURIComponent(code)}`,
+    `https://www.autoaibe.lt/search?text=${encodeURIComponent(code)}`
+  ];
+  
+  sites.forEach(url => window.open(url, '_blank'));
+  showToast(`Atidaryta ${sites.length} svetainių su '${code}'`);
 }
 
 function searchOnline(code) {

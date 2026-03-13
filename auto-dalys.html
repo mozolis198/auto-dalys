@@ -789,7 +789,7 @@
 <div class="header">
   <div class="logo">Auto<span>Dalys</span></div>
   <div class="header-stats">
-    <div class="stat-badge" id="syncStatus" title="Sinchronizacijos būsena" style="cursor:pointer" onclick="loadFromCloud()">⚠</div>
+    <button class="btn btn-surface" id="syncBtn" style="padding:4px 10px;font-size:11px;" onclick="loadFromCloud()">🔄 Sinchronizuoti</button>
     <div class="stat-badge" id="totalBadge">0 dalių</div>
     <div class="stat-badge" id="lowBadge" style="color:var(--red)">⚠ 0</div>
   </div>
@@ -1027,13 +1027,26 @@ let db;
 let firebaseReady = false;
 let syncStatus = 'local';
 
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-  firebaseReady = true;
-  syncStatus = 'synced';
-} catch(e) {
-  console.log('Firebase not configured - using local storage only');
+function initFirebase() {
+  try {
+    if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      firebaseReady = true;
+      syncStatus = 'synced';
+      console.log('Firebase initialized successfully');
+    } else {
+      console.log('Firebase SDK not loaded');
+    }
+  } catch(e) {
+    console.log('Firebase error:', e.message);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initFirebase);
+} else {
+  initFirebase();
 }
 
 // ===================== DATA =====================
